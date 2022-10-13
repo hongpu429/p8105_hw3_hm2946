@@ -1,0 +1,19 @@
+---
+title: "hw3"
+author: "min"
+date: "2022-10-13"
+output: github_document
+---
+
+## preparation
+```{r}
+library(p8105.datasets)
+data("instacart")
+```
+
+## Check the data
+```{r}
+str(instacart)
+```
+*The data has 15 variables and in total 1384617 observations. The variables starts with order_id, product_id for identification and variables like product_name, aisle, departments specify the goods. For example, product_id 49302 is Bulgarian Yogurt, which is in aisle yogurt department dairy eggs.*
+
