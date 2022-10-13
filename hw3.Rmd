@@ -7,6 +7,7 @@ output: github_document
 
 ## preparation
 ```{r}
+library(tidyverse)
 library(p8105.datasets)
 data("instacart")
 ```
@@ -17,3 +18,10 @@ str(instacart)
 ```
 *The data has 15 variables and in total 1384617 observations. The variables starts with order_id, product_id for identification and variables like product_name, aisle, departments specify the goods. For example, product_id 49302 is Bulgarian Yogurt, which is in aisle yogurt department dairy eggs.*
 
+### count aisles
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  arrange(desc(n))
+```
+*There are 134 aisles, and fresh vegetables is where the most items ordered from*
