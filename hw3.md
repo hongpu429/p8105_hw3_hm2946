@@ -269,8 +269,93 @@ midnight.*
 
 ``` r
 acc_data %>% 
-  ggplot(aes(x = minute_from_midnight,y = activity_counts, color = week)) + 
-  geom_point()
+  ggplot(aes(x = minute_from_midnight,y = activity_counts, color = day_of_the_week)) +
+  geom_point(alpha = .1) +
+  geom_smooth(se = FALSE) +
+  ylim(NA,2500)
 ```
 
-![](hw3_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+
+    ## Warning: Removed 202 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 202 rows containing missing values (geom_point).
+
+![](hw3_files/figure-gfm/unnamed-chunk-9-1.png)<!-- --> *The activity
+counts are low and steady in the first place, then it starts to rise at
+minute 250, achieve a climax around minute 600, decreases, rises again,
+achieves another climax around 1100, especially in Friday and Sunday.*
+
+# problem 3
+
+``` r
+data("ny_noaa")
+str(ny_noaa)
+```
+
+    ## tibble [2,595,176 × 7] (S3: tbl_df/tbl/data.frame)
+    ##  $ id  : chr [1:2595176] "US1NYAB0001" "US1NYAB0001" "US1NYAB0001" "US1NYAB0001" ...
+    ##  $ date: Date[1:2595176], format: "2007-11-01" "2007-11-02" ...
+    ##  $ prcp: int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ snow: int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ snwd: int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ tmax: chr [1:2595176] NA NA NA NA ...
+    ##  $ tmin: chr [1:2595176] NA NA NA NA ...
+    ##  - attr(*, "spec")=
+    ##   .. cols(
+    ##   ..   id = col_character(),
+    ##   ..   date = col_date(format = ""),
+    ##   ..   prcp = col_integer(),
+    ##   ..   snow = col_integer(),
+    ##   ..   snwd = col_integer(),
+    ##   ..   tmax = col_character(),
+    ##   ..   tmin = col_character()
+    ##   .. )
+
+``` r
+ny_noaa %>% drop_na()
+```
+
+    ## # A tibble: 1,222,433 × 7
+    ##    id          date        prcp  snow  snwd tmax  tmin 
+    ##    <chr>       <date>     <int> <int> <int> <chr> <chr>
+    ##  1 USC00300023 1981-01-03     0     0     0 -122  -206 
+    ##  2 USC00300023 1981-01-05     0     0     0 -56   -178 
+    ##  3 USC00300023 1981-01-12     0     0     0 -122  -306 
+    ##  4 USC00300023 1981-01-13     0     0     0 -67   -289 
+    ##  5 USC00300023 1981-01-15     0     0     0 -50   -106 
+    ##  6 USC00300023 1981-01-17     0     0     0 -11   -150 
+    ##  7 USC00300023 1981-01-20     0     0     0 61    -67  
+    ##  8 USC00300023 1981-01-21     0     0     0 17    -106 
+    ##  9 USC00300023 1981-01-22     0     0     0 6     -50  
+    ## 10 USC00300023 1981-01-23   117   127    76 22    -44  
+    ## # … with 1,222,423 more rows
+
+*There are 7 variables and 2595176 observations in this data, only
+1222433 observations contain no missing values. The dataset identify
+each observation with id and date, and then describes prcp,snow,snwd and
+temperature min&max in each observation.*
+
+## tidy the data
+
+``` r
+tidy_ny = ny_noaa %>% 
+  separate(col = date, into = c("year","month","day")) %>% 
+  mutate(tmax = as.numeric(tmax)/10, tmin = as.numeric(tmin)/10, prcp = prcp/10)
+
+str(tidy_ny)
+```
+
+    ## tibble [2,595,176 × 9] (S3: tbl_df/tbl/data.frame)
+    ##  $ id   : chr [1:2595176] "US1NYAB0001" "US1NYAB0001" "US1NYAB0001" "US1NYAB0001" ...
+    ##  $ year : chr [1:2595176] "2007" "2007" "2007" "2007" ...
+    ##  $ month: chr [1:2595176] "11" "11" "11" "11" ...
+    ##  $ day  : chr [1:2595176] "01" "02" "03" "04" ...
+    ##  $ prcp : num [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ snow : int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ snwd : int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ tmax : num [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+    ##  $ tmin : num [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
+
+*the most commonly observed values for snowfall is 0, as normally, there
+is no snow.*

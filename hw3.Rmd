@@ -111,7 +111,29 @@ acc_data %>%
 ## plot
 ```{r}
 acc_data %>% 
-  ggplot(aes(x = minute_from_midnight,y = activity_counts, color = week)) + 
-  geom_point()
+  ggplot(aes(x = minute_from_midnight,y = activity_counts, color = day_of_the_week)) +
+  geom_point(alpha = .1) +
+  geom_smooth(se = FALSE) +
+  ylim(NA,2500)
 ```
+*The activity counts are low and steady in the first place, then it starts to rise at minute 250, achieve a climax around minute 600, decreases, rises again, achieves another climax around 1100, especially in Friday and Sunday.*
+
+# problem 3
+
+```{r}
+data("ny_noaa")
+str(ny_noaa)
+ny_noaa %>% drop_na()
+```
+*There are 7 variables and 2595176 observations in this data, only 1222433 observations contain no missing values. The dataset identify each observation with id and date, and then describes prcp,snow,snwd and temperature min&max in each observation.*
+
+## tidy the data
+```{r}
+tidy_ny = ny_noaa %>% 
+  separate(col = date, into = c("year","month","day")) %>% 
+  mutate(tmax = as.numeric(tmax)/10, tmin = as.numeric(tmin)/10, prcp = prcp/10)
+
+str(tidy_ny)
+```
+*the most commonly observed values for snowfall is `r tidy_ny %>% count(snow) %>% arrange(desc(n)) %>% head(1) %>% select(snow)`, as normally, there is no snow.*
 
