@@ -143,7 +143,27 @@ str(tidy_ny)
 tidy_ny %>% 
   filter(month == c(1,7), !is.na(tmax)) %>% 
   group_by(id,year,month) %>% 
-  summarize(ave_tmax = mean(tmax))
-  
+  summarize(ave_tmax = mean(tmax)) %>% 
+  ggplot(aes(x = year, y = ave_tmax)) + 
+  geom_point() + 
+  facet_grid(.~month)
+
+```
+*The ave_tmax in July is significantly higher than ave_tmax in January. Outliers exist*
+
+## tmax vs tmin
+```{r}
+tidy_ny %>% 
+  drop_na(c(tmax,tmin)) %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_hex()
+```
+
+## snowfall distribution
+```{r}
+tidy_ny %>% 
+  filter(snow > 0,snow < 100) %>% 
+  ggplot(aes(x = snow, y = factor(year))) + 
+  geom_density_ridges(scale = .85)
 ```
 

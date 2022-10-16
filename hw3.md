@@ -367,24 +367,39 @@ is no snow.*
 tidy_ny %>% 
   filter(month == c(1,7), !is.na(tmax)) %>% 
   group_by(id,year,month) %>% 
-  summarize(ave_tmax = mean(tmax))
+  summarize(ave_tmax = mean(tmax)) %>% 
+  ggplot(aes(x = year, y = ave_tmax)) + 
+  geom_point() + 
+  facet_grid(.~month)
 ```
 
     ## `summarise()` has grouped output by 'id', 'year'. You can override using the
     ## `.groups` argument.
 
-    ## # A tibble: 8,139 × 4
-    ## # Groups:   id, year [4,194]
-    ##    id           year month ave_tmax
-    ##    <chr>       <int> <int>    <dbl>
-    ##  1 USC00300023  1981     1   -3.33 
-    ##  2 USC00300023  1981     7   28.5  
-    ##  3 USC00300023  1982     1   -3.96 
-    ##  4 USC00300023  1982     7   27.6  
-    ##  5 USC00300023  1983     1    1.39 
-    ##  6 USC00300023  1983     7   29.5  
-    ##  7 USC00300023  1984     7   27.4  
-    ##  8 USC00300023  1985     1   -0.871
-    ##  9 USC00300023  1989     7   26.2  
-    ## 10 USC00300023  1990     1    5.07 
-    ## # … with 8,129 more rows
+![](hw3_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> *The ave_tmax
+in July is significantly higher than ave_tmax in January. Outliers
+exist*
+
+## tmax vs tmin
+
+``` r
+tidy_ny %>% 
+  drop_na(c(tmax,tmin)) %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_hex()
+```
+
+![](hw3_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+## snowfall distribution
+
+``` r
+tidy_ny %>% 
+  filter(snow > 0,snow < 100) %>% 
+  ggplot(aes(x = snow, y = factor(year))) + 
+  geom_density_ridges(scale = .85)
+```
+
+    ## Picking joint bandwidth of 3.76
+
+![](hw3_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
