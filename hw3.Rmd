@@ -131,9 +131,19 @@ ny_noaa %>% drop_na()
 ```{r}
 tidy_ny = ny_noaa %>% 
   separate(col = date, into = c("year","month","day")) %>% 
+  mutate(year = as.integer(year), month = as.integer(month), day = as.integer(day)) %>%
   mutate(tmax = as.numeric(tmax)/10, tmin = as.numeric(tmin)/10, prcp = prcp/10)
 
 str(tidy_ny)
 ```
 *the most commonly observed values for snowfall is `r tidy_ny %>% count(snow) %>% arrange(desc(n)) %>% head(1) %>% select(snow)`, as normally, there is no snow.*
+
+## plot
+```{r}
+tidy_ny %>% 
+  filter(month == c(1,7), !is.na(tmax)) %>% 
+  group_by(id,year,month) %>% 
+  summarize(ave_tmax = mean(tmax))
+  
+```
 

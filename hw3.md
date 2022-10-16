@@ -341,6 +341,7 @@ temperature min&max in each observation.*
 ``` r
 tidy_ny = ny_noaa %>% 
   separate(col = date, into = c("year","month","day")) %>% 
+  mutate(year = as.integer(year), month = as.integer(month), day = as.integer(day)) %>%
   mutate(tmax = as.numeric(tmax)/10, tmin = as.numeric(tmin)/10, prcp = prcp/10)
 
 str(tidy_ny)
@@ -348,9 +349,9 @@ str(tidy_ny)
 
     ## tibble [2,595,176 × 9] (S3: tbl_df/tbl/data.frame)
     ##  $ id   : chr [1:2595176] "US1NYAB0001" "US1NYAB0001" "US1NYAB0001" "US1NYAB0001" ...
-    ##  $ year : chr [1:2595176] "2007" "2007" "2007" "2007" ...
-    ##  $ month: chr [1:2595176] "11" "11" "11" "11" ...
-    ##  $ day  : chr [1:2595176] "01" "02" "03" "04" ...
+    ##  $ year : int [1:2595176] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...
+    ##  $ month: int [1:2595176] 11 11 11 11 11 11 11 11 11 11 ...
+    ##  $ day  : int [1:2595176] 1 2 3 4 5 6 7 8 9 10 ...
     ##  $ prcp : num [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
     ##  $ snow : int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
     ##  $ snwd : int [1:2595176] NA NA NA NA NA NA NA NA NA NA ...
@@ -359,3 +360,31 @@ str(tidy_ny)
 
 *the most commonly observed values for snowfall is 0, as normally, there
 is no snow.*
+
+## plot
+
+``` r
+tidy_ny %>% 
+  filter(month == c(1,7), !is.na(tmax)) %>% 
+  group_by(id,year,month) %>% 
+  summarize(ave_tmax = mean(tmax))
+```
+
+    ## `summarise()` has grouped output by 'id', 'year'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 8,139 × 4
+    ## # Groups:   id, year [4,194]
+    ##    id           year month ave_tmax
+    ##    <chr>       <int> <int>    <dbl>
+    ##  1 USC00300023  1981     1   -3.33 
+    ##  2 USC00300023  1981     7   28.5  
+    ##  3 USC00300023  1982     1   -3.96 
+    ##  4 USC00300023  1982     7   27.6  
+    ##  5 USC00300023  1983     1    1.39 
+    ##  6 USC00300023  1983     7   29.5  
+    ##  7 USC00300023  1984     7   27.4  
+    ##  8 USC00300023  1985     1   -0.871
+    ##  9 USC00300023  1989     7   26.2  
+    ## 10 USC00300023  1990     1    5.07 
+    ## # … with 8,129 more rows
