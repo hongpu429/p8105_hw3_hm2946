@@ -3,6 +3,8 @@ hw3
 min
 2022-10-13
 
+# problem 1
+
 ## preparation
 
 ``` r
@@ -131,3 +133,67 @@ instacart %>%
 | dog food care              | Snack Sticks Chicken & Rice Recipe Dog Treats |   30 |    1 |
 | dog food care              | Organix Chicken & Brown Rice Recipe           |   28 |    2 |
 | dog food care              | Small Dog Biscuits                            |   26 |    3 |
+
+Table of the mean hour of the day at which Pink Lady Apples and Coffee
+Ice Cream are ordered everyday
+
+``` r
+instacart %>%
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>%
+  summarize(mean_hour = mean(order_hour_of_day)) %>%
+  spread(key = order_dow + 1, value = mean_hour) %>%
+  knitr::kable(digits = 2)
+```
+
+    ## `summarise()` has grouped output by 'product_name'. You can override using the
+    ## `.groups` argument.
+
+| product_name     | order_dow | 11.36 | 11.551724137931 | 11.7021276595745 | 11.9375 | 12.2631578947368 | 12.7843137254902 | 13.4411764705882 | 13.7741935483871 | 13.8333333333333 | 14.25 | 14.3157894736842 | 15.2173913043478 | 15.3181818181818 | 15.3809523809524 |
+|:-----------------|----------:|------:|----------------:|-----------------:|--------:|-----------------:|-----------------:|-----------------:|-----------------:|-----------------:|------:|-----------------:|-----------------:|-----------------:|-----------------:|
+| Coffee Ice Cream |         0 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |            13.77 |               NA |    NA |               NA |               NA |               NA |               NA |
+| Coffee Ice Cream |         1 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |               NA |               NA |    NA |            14.32 |               NA |               NA |               NA |
+| Coffee Ice Cream |         2 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |               NA |               NA |    NA |               NA |               NA |               NA |            15.38 |
+| Coffee Ice Cream |         3 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |               NA |               NA |    NA |               NA |               NA |            15.32 |               NA |
+| Coffee Ice Cream |         4 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |               NA |               NA |    NA |               NA |            15.22 |               NA |               NA |
+| Coffee Ice Cream |         5 |    NA |              NA |               NA |      NA |            12.26 |               NA |               NA |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+| Coffee Ice Cream |         6 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |               NA |            13.83 |    NA |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         0 |    NA |              NA |               NA |      NA |               NA |               NA |            13.44 |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         1 | 11.36 |              NA |               NA |      NA |               NA |               NA |               NA |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         2 |    NA |              NA |             11.7 |      NA |               NA |               NA |               NA |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         3 |    NA |              NA |               NA |      NA |               NA |               NA |               NA |               NA |               NA | 14.25 |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         4 |    NA |           11.55 |               NA |      NA |               NA |               NA |               NA |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         5 |    NA |              NA |               NA |      NA |               NA |            12.78 |               NA |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+| Pink Lady Apples |         6 |    NA |              NA |               NA |   11.94 |               NA |               NA |               NA |               NA |               NA |    NA |               NA |               NA |               NA |               NA |
+
+# problem 2
+
+``` r
+acc_data = read.csv("./accel_data.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(day_of_the_week = day, day = day_id) %>% 
+  pivot_longer(activity_1:activity_1440,
+               names_to = "minute_from_midnight",
+               names_prefix = "activity.",
+               values_to = "activity_counts") %>% 
+  mutate(minute_from_midnight = as.numeric(minute_from_midnight)) %>% 
+  mutate(weekday_vs_weekend = 
+           ifelse(day_of_the_week == c("Saturday","Sunday"),"weekend","weekday"))
+
+acc_data
+```
+
+    ## # A tibble: 50,400 × 6
+    ##     week   day day_of_the_week minute_from_midnight activity_counts weekday_vs…¹
+    ##    <int> <int> <chr>                          <dbl>           <dbl> <chr>       
+    ##  1     1     1 Friday                             1            88.4 weekday     
+    ##  2     1     1 Friday                             2            82.2 weekday     
+    ##  3     1     1 Friday                             3            64.4 weekday     
+    ##  4     1     1 Friday                             4            70.0 weekday     
+    ##  5     1     1 Friday                             5            75.0 weekday     
+    ##  6     1     1 Friday                             6            66.3 weekday     
+    ##  7     1     1 Friday                             7            53.8 weekday     
+    ##  8     1     1 Friday                             8            47.8 weekday     
+    ##  9     1     1 Friday                             9            55.5 weekday     
+    ## 10     1     1 Friday                            10            43.0 weekday     
+    ## # … with 50,390 more rows, and abbreviated variable name ¹​weekday_vs_weekend
