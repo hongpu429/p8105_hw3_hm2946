@@ -49,3 +49,15 @@ instacart %>%
   theme(axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
+Table of the three most popular items in aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”
+```{r}
+instacart %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  group_by(aisle) %>% 
+  count(product_name) %>% 
+  mutate(rank = min_rank(desc(n))) %>% 
+  filter(rank < 4) %>% 
+  arrange(desc(n)) %>%
+  knitr::kable()
+```
+

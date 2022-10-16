@@ -90,10 +90,14 @@ instacart %>%
 *There are 134 aisles, and fresh vegetables is where the most items
 ordered from*
 
+plot of the number of items ordered in each aisle, only in which more
+than 10000 items ordered
+
 ``` r
 instacart %>% 
   count(aisle) %>% 
-  filter(n > 10000) %>%
+  filter(n > 10000) %>% 
+  mutate(aisle = fct_reorder(aisle, n)) %>% 
   ggplot(aes(x = aisle,y = n)) + 
   geom_point() + 
   labs(title = "number of items ordered in each aisle") +
@@ -102,4 +106,28 @@ instacart %>%
 
 ![](hw3_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-%\>% ggplot(aes(x = aisle_id, y = number_of_items_ordered)) + geom_bar()
+Table of the three most popular items in aisles “baking ingredients”,
+“dog food care”, and “packaged vegetables fruits”
+
+``` r
+instacart %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  group_by(aisle) %>% 
+  count(product_name) %>% 
+  mutate(rank = min_rank(desc(n))) %>% 
+  filter(rank < 4) %>% 
+  arrange(desc(n)) %>%
+  knitr::kable()
+```
+
+| aisle                      | product_name                                  |    n | rank |
+|:---------------------------|:----------------------------------------------|-----:|-----:|
+| packaged vegetables fruits | Organic Baby Spinach                          | 9784 |    1 |
+| packaged vegetables fruits | Organic Raspberries                           | 5546 |    2 |
+| packaged vegetables fruits | Organic Blueberries                           | 4966 |    3 |
+| baking ingredients         | Light Brown Sugar                             |  499 |    1 |
+| baking ingredients         | Pure Baking Soda                              |  387 |    2 |
+| baking ingredients         | Cane Sugar                                    |  336 |    3 |
+| dog food care              | Snack Sticks Chicken & Rice Recipe Dog Treats |   30 |    1 |
+| dog food care              | Organix Chicken & Brown Rice Recipe           |   28 |    2 |
+| dog food care              | Small Dog Biscuits                            |   26 |    3 |
