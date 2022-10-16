@@ -8,20 +8,44 @@ output: github_document
 ## preparation
 ```{r}
 library(tidyverse)
+library(ggridges)
+library(patchwork)
 library(p8105.datasets)
 data("instacart")
 ```
 
-## Check the data
+#### Introduce the data
 ```{r}
-str(instacart)
-```
-*The data has 15 variables and in total 1384617 observations. The variables starts with order_id, product_id for identification and variables like product_name, aisle, departments specify the goods. For example, product_id 49302 is Bulgarian Yogurt, which is in aisle yogurt department dairy eggs.*
+instacart = 
+  instacart %>% 
+  as_tibble(instacart)
 
-### count aisles
+instacart
+```
+*The data has 15 columns (variables) and 1384617 rows (observations). The variables starts with order_id, product_id for identification and variables like product_name, aisle, departments specify the goods. For example, product_id 49302 is Bulgarian Yogurt, which is in aisle yogurt department dairy eggs.*
+
+In total, there are `r instacart %>% select(product_id) %>% distinct %>% count` different products in `r instacart %>% select(order_id) %>% distinct %>% count` different orders from `r instacart %>% select(user_id) %>% distinct %>% count` different users.
+
+
+#### answer the questions
+
+count aisles
 ```{r}
 instacart %>% 
   count(aisle) %>% 
   arrange(desc(n))
 ```
 *There are 134 aisles, and fresh vegetables is where the most items ordered from*
+
+plot of the number of items ordered in each aisle, only in which more than 10000 items ordered
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  filter(n > 10000) %>% 
+  mutate(aisle = fct_reorder(aisle, n)) %>% 
+  ggplot(aes(x = aisle,y = n)) + 
+  geom_point() + 
+  labs(title = "number of items ordered in each aisle") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+

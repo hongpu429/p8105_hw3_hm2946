@@ -19,58 +19,52 @@ library(tidyverse)
     ## ✖ dplyr::lag()    masks stats::lag()
 
 ``` r
+library(ggridges)
+library(patchwork)
 library(p8105.datasets)
 data("instacart")
 ```
 
-## Check the data
+#### Introduce the data
 
 ``` r
-str(instacart)
+instacart = 
+  instacart %>% 
+  as_tibble(instacart)
+
+instacart
 ```
 
-    ## tibble [1,384,617 × 15] (S3: tbl_df/tbl/data.frame)
-    ##  $ order_id              : int [1:1384617] 1 1 1 1 1 1 1 1 36 36 ...
-    ##  $ product_id            : int [1:1384617] 49302 11109 10246 49683 43633 13176 47209 22035 39612 19660 ...
-    ##  $ add_to_cart_order     : int [1:1384617] 1 2 3 4 5 6 7 8 1 2 ...
-    ##  $ reordered             : int [1:1384617] 1 1 0 0 1 0 0 1 0 1 ...
-    ##  $ user_id               : int [1:1384617] 112108 112108 112108 112108 112108 112108 112108 112108 79431 79431 ...
-    ##  $ eval_set              : chr [1:1384617] "train" "train" "train" "train" ...
-    ##  $ order_number          : int [1:1384617] 4 4 4 4 4 4 4 4 23 23 ...
-    ##  $ order_dow             : int [1:1384617] 4 4 4 4 4 4 4 4 6 6 ...
-    ##  $ order_hour_of_day     : int [1:1384617] 10 10 10 10 10 10 10 10 18 18 ...
-    ##  $ days_since_prior_order: int [1:1384617] 9 9 9 9 9 9 9 9 30 30 ...
-    ##  $ product_name          : chr [1:1384617] "Bulgarian Yogurt" "Organic 4% Milk Fat Whole Milk Cottage Cheese" "Organic Celery Hearts" "Cucumber Kirby" ...
-    ##  $ aisle_id              : int [1:1384617] 120 108 83 83 95 24 24 21 2 115 ...
-    ##  $ department_id         : int [1:1384617] 16 16 4 4 15 4 4 16 16 7 ...
-    ##  $ aisle                 : chr [1:1384617] "yogurt" "other creams cheeses" "fresh vegetables" "fresh vegetables" ...
-    ##  $ department            : chr [1:1384617] "dairy eggs" "dairy eggs" "produce" "produce" ...
-    ##  - attr(*, "spec")=
-    ##   .. cols(
-    ##   ..   order_id = col_integer(),
-    ##   ..   product_id = col_integer(),
-    ##   ..   add_to_cart_order = col_integer(),
-    ##   ..   reordered = col_integer(),
-    ##   ..   user_id = col_integer(),
-    ##   ..   eval_set = col_character(),
-    ##   ..   order_number = col_integer(),
-    ##   ..   order_dow = col_integer(),
-    ##   ..   order_hour_of_day = col_integer(),
-    ##   ..   days_since_prior_order = col_integer(),
-    ##   ..   product_name = col_character(),
-    ##   ..   aisle_id = col_integer(),
-    ##   ..   department_id = col_integer(),
-    ##   ..   aisle = col_character(),
-    ##   ..   department = col_character()
-    ##   .. )
+    ## # A tibble: 1,384,617 × 15
+    ##    order_id product_id add_to_…¹ reord…² user_id eval_…³ order…⁴ order…⁵ order…⁶
+    ##       <int>      <int>     <int>   <int>   <int> <chr>     <int>   <int>   <int>
+    ##  1        1      49302         1       1  112108 train         4       4      10
+    ##  2        1      11109         2       1  112108 train         4       4      10
+    ##  3        1      10246         3       0  112108 train         4       4      10
+    ##  4        1      49683         4       0  112108 train         4       4      10
+    ##  5        1      43633         5       1  112108 train         4       4      10
+    ##  6        1      13176         6       0  112108 train         4       4      10
+    ##  7        1      47209         7       0  112108 train         4       4      10
+    ##  8        1      22035         8       1  112108 train         4       4      10
+    ##  9       36      39612         1       0   79431 train        23       6      18
+    ## 10       36      19660         2       1   79431 train        23       6      18
+    ## # … with 1,384,607 more rows, 6 more variables: days_since_prior_order <int>,
+    ## #   product_name <chr>, aisle_id <int>, department_id <int>, aisle <chr>,
+    ## #   department <chr>, and abbreviated variable names ¹​add_to_cart_order,
+    ## #   ²​reordered, ³​eval_set, ⁴​order_number, ⁵​order_dow, ⁶​order_hour_of_day
 
-*The data has 15 variables and in total 1384617 observations. The
-variables starts with order_id, product_id for identification and
+*The data has 15 columns (variables) and 1384617 rows (observations).
+The variables starts with order_id, product_id for identification and
 variables like product_name, aisle, departments specify the goods. For
 example, product_id 49302 is Bulgarian Yogurt, which is in aisle yogurt
 department dairy eggs.*
 
-### count aisles
+In total, there are 39123 different products in 131209 different orders
+from 131209 different users.
+
+#### answer the questions
+
+count aisles
 
 ``` r
 instacart %>% 
@@ -95,3 +89,17 @@ instacart %>%
 
 *There are 134 aisles, and fresh vegetables is where the most items
 ordered from*
+
+``` r
+instacart %>% 
+  count(aisle) %>% 
+  filter(n > 10000) %>%
+  ggplot(aes(x = aisle,y = n)) + 
+  geom_point() + 
+  labs(title = "number of items ordered in each aisle") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+![](hw3_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+%\>% ggplot(aes(x = aisle_id, y = number_of_items_ordered)) + geom_bar()
