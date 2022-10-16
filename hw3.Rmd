@@ -106,4 +106,12 @@ acc_data %>%
   arrange(desc(total)) %>% 
   head(20)
 ```
-**
+*There is no apparent trend in the first table, but in the second, we can see it tends to have higher activity counts in weekdays, and it is more likely to have higher activity counts at around 1170 minutes from midnight.*
+
+## plot
+```{r}
+acc_data %>% 
+  ggplot(aes(x = minute_from_midnight,y = activity_counts, color = week)) + 
+  geom_point()
+```
+

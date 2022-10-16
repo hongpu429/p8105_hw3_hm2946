@@ -260,4 +260,17 @@ acc_data %>%
     ## 19    33                  415 weekday             5805
     ## 20     8                 1274 weekday             5706
 
-\*\*
+*There is no apparent trend in the first table, but in the second, we
+can see it tends to have higher activity counts in weekdays, and it is
+more likely to have higher activity counts at around 1170 minutes from
+midnight.*
+
+## plot
+
+``` r
+acc_data %>% 
+  ggplot(aes(x = minute_from_midnight,y = activity_counts, color = week)) + 
+  geom_point()
+```
+
+![](hw3_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
