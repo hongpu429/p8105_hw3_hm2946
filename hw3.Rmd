@@ -74,6 +74,7 @@ instacart %>%
 
 # problem 2
 
+## tidy the data
 ```{r}
 acc_data = read.csv("./accel_data.csv") %>% 
   janitor::clean_names() %>% 
@@ -89,3 +90,20 @@ acc_data = read.csv("./accel_data.csv") %>%
 acc_data
 ```
 
+
+## aggregate table
+```{r}
+acc_data %>% 
+  group_by(week, day_of_the_week) %>% 
+  summarize(total = sum(activity_counts)) %>% 
+  pivot_wider(names_from = day_of_the_week,
+              values_from = total) %>% 
+  select(week, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
+
+acc_data %>% 
+  group_by(day, minute_from_midnight,weekday_vs_weekend) %>% 
+  summarize(total = sum(activity_counts)) %>% 
+  arrange(desc(total)) %>% 
+  head(20)
+```
+**

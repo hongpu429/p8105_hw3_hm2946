@@ -168,6 +168,8 @@ instacart %>%
 
 # problem 2
 
+## tidy the data
+
 ``` r
 acc_data = read.csv("./accel_data.csv") %>% 
   janitor::clean_names() %>% 
@@ -197,3 +199,65 @@ acc_data
     ##  9     1     1 Friday                             9            55.5 weekday     
     ## 10     1     1 Friday                            10            43.0 weekday     
     ## # … with 50,390 more rows, and abbreviated variable name ¹​weekday_vs_weekend
+
+## aggregate table
+
+``` r
+acc_data %>% 
+  group_by(week, day_of_the_week) %>% 
+  summarize(total = sum(activity_counts)) %>% 
+  pivot_wider(names_from = day_of_the_week,
+              values_from = total) %>% 
+  select(week, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
+```
+
+    ## `summarise()` has grouped output by 'week'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 5 × 8
+    ## # Groups:   week [5]
+    ##    week  Monday Tuesday Wednesday Thursday  Friday Saturday Sunday
+    ##   <int>   <dbl>   <dbl>     <dbl>    <dbl>   <dbl>    <dbl>  <dbl>
+    ## 1     1  78828. 307094.   340115.  355924. 480543.   376254 631105
+    ## 2     2 295431  423245    440962   474048  568839    607175 422018
+    ## 3     3 685910  381507    468869   371230  467420    382928 467052
+    ## 4     4 409450  319568    434460   340291  154049      1440 260617
+    ## 5     5 389080  367824    445366   549658  620860      1440 138421
+
+``` r
+acc_data %>% 
+  group_by(day, minute_from_midnight,weekday_vs_weekend) %>% 
+  summarize(total = sum(activity_counts)) %>% 
+  arrange(desc(total)) %>% 
+  head(20)
+```
+
+    ## `summarise()` has grouped output by 'day', 'minute_from_midnight'. You can
+    ## override using the `.groups` argument.
+
+    ## # A tibble: 20 × 4
+    ## # Groups:   day, minute_from_midnight [20]
+    ##      day minute_from_midnight weekday_vs_weekend total
+    ##    <int>                <dbl> <chr>              <dbl>
+    ##  1    14                 1172 weekday             8982
+    ##  2     4                  691 weekday             7866
+    ##  3    14                 1171 weekday             7866
+    ##  4    16                 1176 weekday             7358
+    ##  5    16                 1249 weekday             7236
+    ##  6     1                  550 weekday             6997
+    ##  7    10                 1192 weekday             6879
+    ##  8    10                 1201 weekend             6539
+    ##  9    29                 1315 weekday             6539
+    ## 10     4                  663 weekday             6214
+    ## 11     8                 1229 weekday             6214
+    ## 12     8                 1230 weekday             6109
+    ## 13     8                 1231 weekday             6109
+    ## 14    29                 1314 weekday             6109
+    ## 15     8                 1242 weekday             6007
+    ## 16     1                 1260 weekday             5906
+    ## 17    14                 1174 weekday             5906
+    ## 18    18                  451 weekday             5805
+    ## 19    33                  415 weekday             5805
+    ## 20     8                 1274 weekday             5706
+
+\*\*
